@@ -1,0 +1,95 @@
+#loading data 
+import pandas as pd
+df=pd.read_csv(r"C:\Users\pc\Documents\tmdb_5000_movies.csv")
+
+from sklearn.linear_model import LinearRegression
+from sklearn.impute import SimpleImputer
+
+# Split the data into X and y
+X = df[['budget', 'popularity', 'runtime', 'vote_count', 'vote_average']]
+y = df['revenue']
+
+
+# Impute missing values
+imp = SimpleImputer(strategy='mean')
+X = imp.fit_transform(X)
+
+# Split the data into training and testing sets
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+#you need to split the data into training and testing sets and train different machine learning models on the training data.
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+
+
+
+# Train linear regression model
+lr_model = LinearRegression()
+lr_model.fit(X_train, y_train)
+lr_pred = lr_model.predict(X_test)
+lr_score = mean_squared_error(y_test, lr_pred)
+
+# Train decision tree model
+dt_model = DecisionTreeRegressor()
+dt_model.fit(X_train, y_train)
+dt_pred = dt_model.predict(X_test)
+dt_score = mean_squared_error(y_test, dt_pred)
+
+# Train random forest model
+rf_model = RandomForestRegressor()
+rf_model.fit(X_train, y_train)
+rf_pred = rf_model.predict(X_test)
+rf_score = mean_squared_error(y_test, rf_pred)
+
+#compare the performance of the different models based on their mean squared error (MSE) scores and choose the best one to make predictions on new data.
+print('Linear Regression MSE:', lr_score)
+print('Decision Tree MSE:', dt_score)
+print('Random Forest MSE:', rf_score)
+
+# Predict revenue of new movie and therefore arrive at a conclusion if it is worth it
+new_movie = pd.DataFrame({
+    'budget': [100000000],
+    'popularity': [10],
+    'runtime': [120],
+    'vote_average': [7.5],
+    'vote_count': [500]
+
+})
+# since  random forest model is the best model we use it to predict revenue of new movie
+new_movie_pred = rf_model.predict(new_movie)
+print('Predicted revenue of new movie:', new_movie_pred[0])
+
+#Exploratory data analysis
+
+# Import libraries 
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# histograms
+plt.hist(df["budget"], bins=20)
+plt.xlabel("Budget")
+plt.ylabel("Frequency")
+plt.show()
+
+# box plots
+sns.boxplot(x="status", y="revenue", data=df)
+plt.xlabel("Status")
+plt.ylabel("Revenue")
+plt.show()
+
+# scatter plots
+plt.scatter(df["runtime"], df["vote_average"])
+plt.xlabel("Runtime")
+plt.ylabel("Vote Average")
+plt.show()
+
+# correlation matrix
+corr = df.corr()
+sns.heatmap(corr, annot=True, cmap="YlGnBu")
+plt.show()
